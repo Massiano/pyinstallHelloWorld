@@ -41,6 +41,17 @@ os.chdir(serve_dir)
 print(f"📁 Serving folder: {serve_dir}")
 print(f"🔗 Open: http://localhost:{PORT}")
 
+# 👇👇👇 CUSTOM HANDLER WITH SECURITY HEADERS 👇👇👇
+class CORSRequestHandler(http.server.SimpleHTTPRequestHandler):
+    def end_headers(self):
+        # Enable cross-origin isolation for SharedArrayBuffer
+        self.send_header('Cross-Origin-Embedder-Policy', 'require-corp')
+        self.send_header('Cross-Origin-Opener-Policy', 'same-origin')
+        # Optional: allow local dev CORS if needed
+        # self.send_header('Cross-Origin-Resource-Policy', 'same-origin')
+        super().end_headers()
+# 👆👆👆 END CUSTOM HANDLER 👆👆👆
+
 # Optional: auto-open browser
 try:
     import webbrowser
@@ -51,7 +62,8 @@ try:
 except:
     pass
 
-with socketserver.TCPServer(("", PORT), http.server.SimpleHTTPRequestHandler) as httpd:
+# Use the custom handler
+with socketserver.TCPServer(("", PORT), CORSRequestHandler) as httpd:
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
