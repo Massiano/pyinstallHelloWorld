@@ -2,24 +2,15 @@ name: Build Win64 EXE
 on: [push]
 jobs:
   build:
-    runs-on: windows-latest  # Real Windows Server 2022 (64-bit)
+    runs-on: windows-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Install PyInstaller
-        run: pip install pyinstaller
-
-      - name: Build EXE
-        run: pyinstaller --onefile --console hello.py
-
-      - name: Upload EXE as artifact
-        uses: actions/upload-artifact@v4
+      - run: pip install pyinstaller
+      - run: pyinstaller --onefile --console hello.py
+      - uses: actions/upload-artifact@v4
         with:
-          name: hello-win64
+          name: hello-exe
           path: dist/hello.exe
