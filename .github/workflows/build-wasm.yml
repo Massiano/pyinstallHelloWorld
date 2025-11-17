@@ -1,6 +1,5 @@
 name: Build whisper.wasm
-on:
-  workflow_dispatch:  # Allows manual trigger
+on: workflow_dispatch
 
 jobs:
   build:
@@ -9,23 +8,29 @@ jobs:
       - name: Checkout whisper.cpp
         uses: actions/checkout@v4
         with:
-          repository: ggerganov/whisper.cpp
-          path: whisper.cpp
+          repository: ggml-org/whisper.cpp
 
       - name: Setup Emscripten
         uses: mymindstorm/setup-emsdk@v12
         with:
           version: 3.1.51
 
-      - name: Build WASM
-        working-directory: whisper.cpp
+      - name: Build WASM (separate .js and .wasm)
         run: |
-          make -j wasm
+          mkdir build-em
+          cd build-em
+          emcmake cmake .. -DWHISPER_WASM_SINGLE_FILE=OFF
+          make -j
 
-      - name: Upload artifacts
+      - name: Rename output files
+        run: |
+          cp build-em/bin/libmain.js main.js
+          cp build-em/bin/libmain.wasm whisper.wasm
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: whisper-wasm-files
+          name: whisper-wasm
           path: |
-            whisper.cpp/examples/wasm/main.js
-            whisper.cpp/examples/wasm/whisper.wasm
+            main.js
+            whisper.wasm
