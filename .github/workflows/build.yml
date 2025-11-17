@@ -9,7 +9,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install pyinstaller
-      - run: pyinstaller --onefile --console hello.py
+      - run: pyinstaller --onefile --console main.py
       - uses: actions/upload-artifact@v4
         with:
           name: hello-exe
