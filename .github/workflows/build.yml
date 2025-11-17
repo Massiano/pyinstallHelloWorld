@@ -5,12 +5,16 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
       - run: pip install pyinstaller
+
       - run: pyinstaller --onefile --console main.py
+
       - uses: actions/upload-artifact@v4
         with:
-          name: hello-exe
-          path: dist/hello.exe
+          name: main-win64
+          path: dist/main.exe
